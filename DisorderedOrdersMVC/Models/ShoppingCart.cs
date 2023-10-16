@@ -1,8 +1,10 @@
-﻿namespace DisorderedOrdersMVC.Models
+﻿using DisorderedOrdersMVC.Services;
+
+namespace DisorderedOrdersMVC.Models
 {
     public class ShoppingCart
     {
-        public void CheckAvailability(Order order)
+        public void CheckItemAvailability(Order order)
         {
             foreach (var orderItem in order.Items)
             {
@@ -22,6 +24,24 @@
                 total += orderItem.Item.Price * orderItem.Quantity;
             }
             return total;
+        }
+
+        public IPaymentProcessor ChoosePaymentProcessor(string paymentType)
+        {
+            IPaymentProcessor processor;
+            if (paymentType == "bitcoin")
+            {
+                processor = new BitcoinProcessor();
+            }
+            else if (paymentType == "paypal")
+            {
+                processor = new PayPalProcessor();
+            }
+            else
+            {
+                processor = new CreditCardProcessor();
+            }
+            return processor;
         }
     }
 }

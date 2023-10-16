@@ -44,27 +44,15 @@ namespace DisorderedOrdersMVC.Controllers
 
             // verify stock available
             ShoppingCart cart = new ShoppingCart();
-            cart.CheckAvailability(order);
+            cart.CheckItemAvailability(order);
 
-            // calculate total price//-------------------------------------------- can be moved
+            // calculate total price
             int total = cart.CalculateTotalPrice(order);
 
-            // process payment //-------------------------------------------- can be moved
-            IPaymentProcessor processor;
-            if (paymentType == "bitcoin")
-            {
-                processor = new BitcoinProcessor();
-            }
-            else if (paymentType == "paypal")
-            {
-                processor = new PayPalProcessor();
-            }
-            else
-            {
-                processor = new CreditCardProcessor();
-            }
+            // process payment
+            cart.ChoosePaymentProcessor(paymentType)
+                .ProcessPayment(total);
 
-            processor.ProcessPayment(total);
 
             _context.Orders.Add(order);
             _context.SaveChanges();
