@@ -28,7 +28,7 @@ namespace DisorderedOrdersMVC.Controllers
         public IActionResult Create(IFormCollection collection, string paymentType)
         {
             // create order
-            int customerId = Convert.ToInt16(collection["CustomerId"]);
+            int customerId = Convert.ToInt16(collection["CustomerId"]);//-------------------------------------------- what is this?
             Customer customer = _context.Customers.Find(customerId);
             var order = new Order() { Customer = customer };
             for (var i = 1; i < collection.Count - 1; i++)
@@ -43,40 +43,16 @@ namespace DisorderedOrdersMVC.Controllers
             }
 
             // verify stock available
-            foreach (var orderItem in order.Items)
-            {
-                if (!orderItem.Item.InStock(orderItem.Quantity))
-                {
-                    orderItem.Quantity = orderItem.Item.StockQuantity;
-                }
-
-                orderItem.Item.DecreaseStock(orderItem.Quantity);
-            }
+            ShoppingCart cart = new ShoppingCart();
+            cart.CheckItemAvailability(order);
 
             // calculate total price
-            var total = 0;
-            foreach (var orderItem in order.Items)
-            {
-                var itemPrice = orderItem.Item.Price * orderItem.Quantity;
-                total += itemPrice;
-            }
+            int total = cart.CalculateTotalPrice(order);
 
             // process payment
-            IPaymentProcessor processor;
-            if (paymentType == "bitcoin")
-            {
-                processor = new BitcoinProcessor();
-            }
-            else if (paymentType == "paypal")
-            {
-                processor = new PayPalProcessor();
-            }
-            else
-            {
-                processor = new CreditCardProcessor();
-            }
+            cart.ChoosePaymentProcessor(paymentType)
+                .ProcessPayment(total);
 
-            processor.ProcessPayment(total);
 
             _context.Orders.Add(order);
             _context.SaveChanges();
@@ -87,18 +63,14 @@ namespace DisorderedOrdersMVC.Controllers
         [Route("/orders/{id:int}")]
         public IActionResult Show(int id)
         {
+            ShoppingCart cart = new ShoppingCart();
             var order = _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Item)
                 .Where(o => o.Id == id).First();
 
-            var total = 0;
-            foreach (var orderItem in order.Items)
-            {
-                var itemPrice = orderItem.Item.Price * orderItem.Quantity;
-                total += itemPrice;
-            }
+            var total = cart.CalculateTotalPrice(order);
             ViewData["total"] = total;
 
             return View(order);

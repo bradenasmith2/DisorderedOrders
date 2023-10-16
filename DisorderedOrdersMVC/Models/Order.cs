@@ -1,4 +1,6 @@
-﻿namespace DisorderedOrdersMVC.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace DisorderedOrdersMVC.Models
 {
     public class Order
     {
