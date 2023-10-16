@@ -28,7 +28,7 @@ namespace DisorderedOrdersMVC.Controllers
         public IActionResult Create(IFormCollection collection, string paymentType)
         {
             // create order
-            int customerId = Convert.ToInt16(collection["CustomerId"]);
+            int customerId = Convert.ToInt16(collection["CustomerId"]);//-------------------------------------------- what is this?
             Customer customer = _context.Customers.Find(customerId);
             var order = new Order() { Customer = customer };
             for (var i = 1; i < collection.Count - 1; i++)
@@ -43,17 +43,10 @@ namespace DisorderedOrdersMVC.Controllers
             }
 
             // verify stock available
-            foreach (var orderItem in order.Items)
-            {
-                if (!orderItem.Item.InStock(orderItem.Quantity))
-                {
-                    orderItem.Quantity = orderItem.Item.StockQuantity;
-                }
+            ShoppingCart cart = new ShoppingCart();
+            cart.CheckAvailability(order);
 
-                orderItem.Item.DecreaseStock(orderItem.Quantity);
-            }
-
-            // calculate total price
+            // calculate total price//-------------------------------------------- can be moved
             var total = 0;
             foreach (var orderItem in order.Items)
             {
@@ -61,7 +54,7 @@ namespace DisorderedOrdersMVC.Controllers
                 total += itemPrice;
             }
 
-            // process payment
+            // process payment //-------------------------------------------- can be moved
             IPaymentProcessor processor;
             if (paymentType == "bitcoin")
             {
@@ -94,7 +87,7 @@ namespace DisorderedOrdersMVC.Controllers
                 .Where(o => o.Id == id).First();
 
             var total = 0;
-            foreach (var orderItem in order.Items)
+            foreach (var orderItem in order.Items)//-------------------------------------------- can be moved
             {
                 var itemPrice = orderItem.Item.Price * orderItem.Quantity;
                 total += itemPrice;
