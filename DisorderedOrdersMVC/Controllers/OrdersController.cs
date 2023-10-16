@@ -63,18 +63,14 @@ namespace DisorderedOrdersMVC.Controllers
         [Route("/orders/{id:int}")]
         public IActionResult Show(int id)
         {
+            ShoppingCart cart = new ShoppingCart();
             var order = _context.Orders
                 .Include(o => o.Customer)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Item)
                 .Where(o => o.Id == id).First();
 
-            var total = 0;
-            foreach (var orderItem in order.Items)//-------------------------------------------- can be moved
-            {
-                var itemPrice = orderItem.Item.Price * orderItem.Quantity;
-                total += itemPrice;
-            }
+            var total = cart.CalculateTotalPrice(order);
             ViewData["total"] = total;
 
             return View(order);
