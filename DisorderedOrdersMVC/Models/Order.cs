@@ -2,9 +2,8 @@
 
 namespace DisorderedOrdersMVC.Models
 {
-    public class Order
+    public class Order : Identifiers
     {
-        public int Id { get; set; }
         public Customer Customer { get; set; }
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
     }
