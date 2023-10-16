@@ -47,12 +47,7 @@ namespace DisorderedOrdersMVC.Controllers
             cart.CheckAvailability(order);
 
             // calculate total price//-------------------------------------------- can be moved
-            var total = 0;
-            foreach (var orderItem in order.Items)
-            {
-                var itemPrice = orderItem.Item.Price * orderItem.Quantity;
-                total += itemPrice;
-            }
+            int total = cart.CalculateTotalPrice(order);
 
             // process payment //-------------------------------------------- can be moved
             IPaymentProcessor processor;
