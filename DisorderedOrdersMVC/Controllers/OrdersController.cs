@@ -44,7 +44,7 @@ namespace DisorderedOrdersMVC.Controllers
 
             // verify stock available
             ShoppingCart cart = new ShoppingCart();
-            cart.CheckItemAvailability(order);
+            cart.ItemAvailability(order);
 
             // calculate total price
             int total = cart.CalculateTotalPrice(order);

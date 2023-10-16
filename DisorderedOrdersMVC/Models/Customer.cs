@@ -1,8 +1,7 @@
 ﻿namespace DisorderedOrdersMVC.Models
 {
-    public class Customer
+    public class Customer : Identifiers
     {
-        public int Id { get; set; }
         public string Email { get; set; }
         public bool IsPreferred { get; set; }
     }

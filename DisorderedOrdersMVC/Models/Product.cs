@@ -2,9 +2,8 @@
 
 namespace DisorderedOrdersMVC.Models
 {
-    public class Product
+    public class Product : Identifiers
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public int StockQuantity { get; set; }
         public int Price { get; set; }
@@ -17,6 +16,18 @@ namespace DisorderedOrdersMVC.Models
         public void DecreaseStock(int qty)
         {
             StockQuantity -= qty;
+        }
+
+        public void CheckItemAvailability(Order order)
+        {
+            foreach (var orderItem in order.Items)
+            {
+                if (!orderItem.Item.InStock(orderItem.Quantity))
+                {
+                    orderItem.Quantity = orderItem.Item.StockQuantity;//if not in stock, return 0
+                }
+                orderItem.Item.DecreaseStock(orderItem.Quantity);//if in stock -qty
+            }
         }
     }
 }

@@ -4,7 +4,8 @@ namespace DisorderedOrdersMVC.Models
 {
     public class ShoppingCart
     {
-        public void CheckItemAvailability(Order order)
+        //[This method checks if an item is available then subtracts the qty the customer wants from the total. Else, the qty is set to 0]//
+        public void ItemAvailability(Order order)
         {
             foreach (var orderItem in order.Items)
             {
